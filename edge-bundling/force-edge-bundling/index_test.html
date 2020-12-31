@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+  	<title>FDEB US Airline Routes Example</title>
+
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="d3-ForceEdgeBundling.js"></script>
+	</head>
+
+	<body>
+		<div id="svg">
+		</div>
+	<script>
+	$(function(){
+		
+		d3.csv("shop.csv", function(shops){
+			d3.csv("randomrelationClu_320.csv", function(relations){
+				console.log(shops);
+				console.log("shops end");
+				console.log(relations);
+				console.log("relations end");
+
+				var eedges = [];
+				var nnodes = {};
+				var min_longitude = Number.MAX_VALUE;
+				var max_longitude = 0;
+				var min_latitude = Number.MAX_VALUE;
+				var max_latitude = 0;
+
+				for(var i=0; i<shops.length; i++){
+					var key = shops[i].id;
+					var longitude = shops[i].longitude;
+					var latitude = shops[i].latitude;
+
+					nnodes[key] = {x: longitude, y: latitude};
+					min_longitude = Math.min(min_longitude, longitude);
+					max_longitude = Math.max(max_longitude, longitude);
+					min_latitude = Math.min(min_latitude, latitude);
+					max_latitude = Math.max(max_latitude, latitude);
+				}
+
+				for(var i = 0; i < relations.length; i++){
+		  			eedges.push({'source':relations[i].from, 
+								'target':relations[i].to});
+				}
+
+
+
+				// console.log(min_longitude);
+				// console.log(max_longitude);
+				// console.log(min_latitude);
+				// console.log(max_latitude);
+				var new_scale_x = d3.scale.linear().domain([min_longitude,max_longitude]).range([50,900]);
+				var new_scale_y = d3.scale.linear().domain([min_latitude, max_latitude]).range([700,50]);
+				for(var i = 0; i < shops.length; i++){
+					nnodes[i].x = new_scale_x(nnodes[i].x);
+					nnodes[i].y = new_scale_y(nnodes[i].y);
+				}
+
+				console.log("nnodes2", nnodes);
+				console.log('eedges2', eedges);
+
+				//Run the FDEB algorithm using default values on the data
+				var fbundling = d3.ForceEdgeBundling()
+				.nodes(nnodes).edges(eedges);
+				var results   = fbundling();
+
+				console.log(results);
+
+				var svg = d3.select("#svg").append("svg")
+					.attr("width", 1000)
+					.attr("height", 1000);
+
+				svg = svg.append('g');
+					svg.append('rect').attr({'fill': 'white', 'width': 1000, 'height': 1500});
+					svg.attr('transform', 'translate(20, 20)');
+
+				var d3line = d3.svg.line()
+                        .x(function(d){return d.x;})
+                        .y(function(d){return d.y;});
+						//.interpolate("linear");
+
+				//plot the data
+				for(var i = 0; i < results.length; i++){
+					svg.append("path").attr("d", d3line(results[i]))
+						.style("stroke-width", 0.5)
+						.style("stroke", "#ff2222")
+						.style("fill", "none")
+						.style('stroke-opacity',0.3);
+				}
+				
+				//draw nodes
+				svg.selectAll('.node')
+					.data(d3.entries(nnodes))
+					.enter()
+					.append('circle')
+					.classed('node', true)
+					.attr({'r': 2, 'fill':'#ffee00'})
+					.attr('cx', function(d){ return d.value.x;})
+					.attr('cy', function(d){ return d.value.y;});
+
+			})
+		})
+    })
+	</script>
+	</body>
+</html>
