@@ -1,20 +1,17 @@
-/*!
- * https://github.com/WeiStaring/d3.KernelEdgeBundling
- */
 (function () {
-    KernelEdgeBundling = function () {
+    d3.KernelEdgeBundling = function () {
         var data_nodes = {}, // {'nodeid':{'x':,'y':},..}
             data_edges = [], // [{'source':'nodeid1', 'target':'nodeid2'},..]
             SplattedAccMap=[],
             subdivision_points_for_edge = [],
-            splitDistance = 0.01,  // 增大或减小, 都会变松. 增大会稍微平滑一点.
-            removeDistance = 0.006, // 增大或减小, 都会变松. 增大会平滑些.
-            AccResolution = 100,  // 增大, 股数变多. 减小, 股数变小.
-            KernelSize = 15,  // 增大, 变松. 减小, 变紧. 默认15, 设为20会平滑一些
+            splitDistance = 0.01,
+            removeDistance = 0.006,
+            AccResolution = 100,
+            KernelSize = 15,
             Kernel = getKernel(KernelSize),
-            GradientW = 15, // 增大, 变松. 减小, 变紧. 
-            attractionFactor = 1.0, // 增大, 变紧. 减小, 变松
-            iteration = 15,
+            GradientW = 15,
+            attractionFactor = 1.0,
+            iteration = 10,
             minn=10000,
             maxn=-10000,
             auto_adaption=false;
@@ -33,9 +30,7 @@
         }
 
         function euclidean_distance(p, q) {
-            var distance = Math.sqrt(Math.pow(p.x - q.x, 2) + Math.pow(p.y - q.y, 2));
-            console.log(distance);
-            return distance;
+            return Math.sqrt(Math.pow(p.x - q.x, 2) + Math.pow(p.y - q.y, 2));
         }
 
         function toInt32(x) {
@@ -173,8 +168,8 @@
                 for(let point of line){
                     for(let i=0;i<Kernel.length;i+=KernelSize){
                         for (let j=0;j<KernelSize;j++){
-                            let x = parseInt(point['x']*AccResolution)*AccResolution+(~~(i/KernelSize)-~~(KernelSize/2))*AccResolution;
-                            let y = parseInt(point['y']*AccResolution)+j-~~(KernelSize/2);
+                            let x = toInt32(point['x']*AccResolution)*AccResolution+(~~(i/KernelSize)-~~(KernelSize/2))*AccResolution;
+                            let y = toInt32(point['y']*AccResolution)+j-~~(KernelSize/2);
                             if(x>0 && x<AccMap.length && y>0 && y<AccResolution){
                                 AccMap[x+y]+=Kernel[i+j];
                             }

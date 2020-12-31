@@ -65,7 +65,7 @@ function render(shops, relations) {
         // .kernelSize(0.9)
         // .gradientW(0.9)
         // .attract(0.9)
-        // .iteration(0.9)
+        .iteration(15)
         // .autoAdapt(0.9);
     const results = fbundling();
     console.log("results", results);

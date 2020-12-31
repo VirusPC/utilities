@@ -16,7 +16,7 @@
             Kernel = getKernel(KernelSize),
             GradientW = 15, // 增大, 变松. 减小, 变紧. 
             attractionFactor = 1.0, // 增大, 变紧. 减小, 变松
-            iteration = 15,
+            iteration = 10,
             minn = 100000000000000000,
             maxn = -10000,
 
