@@ -1,4 +1,4 @@
 Utilities
 ---
 
-Some useful grograms collected from the internet, with some minor changes.
+Some useful programs collected from the internet, with some minor changes.
